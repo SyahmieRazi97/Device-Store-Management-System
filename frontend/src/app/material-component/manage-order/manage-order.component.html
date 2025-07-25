@@ -1,1 +1,40 @@
-<p>manage-order works!</p>
+<mat-card>
+    <b><span>Manage Order</span></b>
+    <button mat-flat-button color="primary" class="float-right" [disabled]="validateSubmit()" (click)="submitAction()">Get bill</button>
+</mat-card>
+<hr>
+<mat-card>
+    <b><span>Customer Details: </span></b>
+    <form [formGroup]="manageOrderForm">
+        <div fxFlex fxLayout="column">
+            <div fxLayout="row wrap">
+                <mat-form-field appearance="fill" fxFlex>
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name" required>
+                    <mat-error *ngIf="manageOrderForm.controls.name.touched && manageOrderForm.controls.name.invalid">
+                        <span *ngIf="manageOrderForm.controls.name.error.required">Must fill it!!!</span>
+                        <span *ngIf="manageOrderForm.controls.name.error.pattern">It's invalid</span>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" fxFlex>
+                    <mat-label>Email</mat-label>
+                    <input matInput formControlName="email" required>
+                    <mat-error *ngIf="manageOrderForm.controls.email.touched && manageOrderForm.controls.email.invalid">
+                        <span *ngIf="manageOrderForm.controls.email.error.required">Must fill it!!!</span>
+                        <span *ngIf="manageOrderForm.controls.email.error.pattern">It's invalid</span>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" fxFlex>
+                    <mat-label>No Phone</mat-label>
+                    <input matInput formControlName="noPhone" required>
+                    <mat-error *ngIf="manageOrderForm.controls.noPhone.touched && manageOrderForm.controls.noPhone.invalid">
+                        <span *ngIf="manageOrderForm.controls.noPhone.error.required">Must fill it!!!</span>
+                        <span *ngIf="manageOrderForm.controls.noPhone.error.pattern">It's invalid</span>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</mat-card>
