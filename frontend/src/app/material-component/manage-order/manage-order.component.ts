@@ -16,13 +16,13 @@ import { saveAs } from 'file-saver';
 })
 export class ManageOrderComponent implements OnInit {
 
-  displayedColumn: string[] = ['name', 'category', 'price', 'quantity', 'total', 'edit'];
+  displayedColumns: string[] = ['name', 'category', 'price', 'quantity', 'total', 'edit'];
   dataSource: any = [];
   manageOrderForm: any = FormGroup;
   categorys: any = [];
-  product: any = [];
+  products: any = [];
   price: any = [];
-  totalAmount: any = [];
+  totalAmount: number = 0;
   responseMessage: any;
 
   constructor(private formBuilder: FormBuilder,
@@ -38,14 +38,14 @@ export class ManageOrderComponent implements OnInit {
     this.getCategorys();
     this.manageOrderForm = this.formBuilder.group({
       name: [null, [Validators.required, Validators.pattern(GlobalConstants.nameRegex)]],
-      email: [null, [Validators.required, Validators.pattern(GlobalConstants.nameRegex)]],
-      noPhone: [null, [Validators.required, Validators.pattern(GlobalConstants.nameRegex)]],
-      PaymentMethod: [null, [Validators.required]],
+      email: [null, [Validators.required, Validators.pattern(GlobalConstants.emailRegex)]],
+      noPhone: [null, [Validators.required, Validators.pattern(GlobalConstants.noPhoneRegex)]],
+      paymentMethod: [null, [Validators.required]],
       product: [null, [Validators.required]],
       category: [null, [Validators.required]],
       quantity: [null, [Validators.required]],
       price: [null, [Validators.required]],
-      total: [0, null, [Validators.required]],
+      total: [0, [Validators.required]],
     })
   }
 
@@ -65,9 +65,9 @@ export class ManageOrderComponent implements OnInit {
     })
   }
 
-  getProductByCategory(value: any) {
-    this.productService.getProductByCategory(value.id).subscribe((response: any) => {
-      this.product = response;
+  getProductsByCategory(value: any) {
+    this.productService.getProductsByCategory(value.id).subscribe((response: any) => {
+      this.products = response;
       this.manageOrderForm.controls['price'].setValue('');
       this.manageOrderForm.controls['quantity'].setValue('');
       this.manageOrderForm.controls['total'].setValue(0);
@@ -84,7 +84,7 @@ export class ManageOrderComponent implements OnInit {
   }
 
   getProductDetails(value: any) {
-    this.productService.getbyid(value.id).subscribe((response: any) => {
+    this.productService.getById(value.id).subscribe((response: any) => {
       this.price = response.price;
       this.manageOrderForm.controls['price'].setValue(response.price);
       this.manageOrderForm.controls['quantity'].setValue('1');
@@ -115,13 +115,18 @@ export class ManageOrderComponent implements OnInit {
   validateProductAdd() {
     if (this.manageOrderForm.controls['total'].value === 0 || this.manageOrderForm.controls['total'].value === null || this.manageOrderForm.controls['quantity'].value <= 0)
       return true;
+
     else
       return false;
   }
 
   validateSubmit() {
-    if (this.totalAmount === 0 || this.manageOrderForm.controls['name'].value === null || this.manageOrderForm.controls['email'].value === null || this.manageOrderForm.controls['noPhone'].value === null || this.manageOrderForm.controls['paymentMethod'].value === null || !(this.manageOrderForm.controls['noPhone'].valid || !(this.manageOrderForm.controls['email'].valid)))
+    if (this.totalAmount === 0 || this.manageOrderForm.controls['name'].value === null || 
+      this.manageOrderForm.controls['email'].value === null || this.manageOrderForm.controls['noPhone'].value === null || 
+      this.manageOrderForm.controls['paymentMethod'].value === null || 
+      !(this.manageOrderForm.controls['noPhone'].valid || !(this.manageOrderForm.controls['email'].valid)))
       return true;
+
     else
       return false;
   }
@@ -136,7 +141,7 @@ export class ManageOrderComponent implements OnInit {
       this.snackbarService.openSnackBar(GlobalConstants.productAdded,"success");
     }
     else {
-      this.snackbarService.openSnackBar(GlobalConstants.productAdded, GlobalConstants.error);
+      this.snackbarService.openSnackBar(GlobalConstants.productExistError, GlobalConstants.error);
     }
   }
 
@@ -154,7 +159,7 @@ export class ManageOrderComponent implements OnInit {
       email:formData.email,
       noPhone:formData.noPhone,
       paymentMethod:formData.paymentMethod,
-      totalAmount:formData.totalAmount,
+      totalAmount:this.totalAmount,
       productDetails: JSON.stringify(this.dataSource)
     }
     this.billService.generateReport(data).subscribe((response:any) =>{

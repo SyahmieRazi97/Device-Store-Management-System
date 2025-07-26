@@ -38,11 +38,11 @@ export class ProductService {
     })
   }
 
-  getProductByCategory(id:any){
+  getProductsByCategory(id:any){
     return this.httpClient.get(this.url+"/product/getByCategory/"+id);
   }
 
-  getbyid(id:any){
+  getById(id:any){
     return this.httpClient.get(this.url+"/product/getById/"+id);
   }
 }
